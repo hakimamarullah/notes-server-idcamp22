@@ -1,3 +1,6 @@
+const ClientError = require('../../exceptions/ClientError');
+
+/* eslint-disable no-underscore-dangle */
 class NotesHandler {
   constructor(service, validator) {
     this._service = service;
@@ -26,10 +29,18 @@ class NotesHandler {
       }).code(201);
       return response;
     } catch (error) {
+      if (error instanceof ClientError) {
+        return h.response({
+          status: 'fail',
+          message: error.message,
+        }).code(error.statusCode);
+      }
+
+      console.error(error);
       return h.response({
-        status: 'fail',
-        messsage: error.message,
-      }).code(400);
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      }).code(500);
     }
   }
 
@@ -46,10 +57,17 @@ class NotesHandler {
         },
       };
     } catch (error) {
+      if (error instanceof ClientError) {
+        return h.response({
+          status: 'fail',
+          message: error.message,
+        }).code(error.statusCode);
+      }
+      console.error(error);
       return h.response({
-        status: 'fail',
-        message: error.message,
-      }).code(404);
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      }).code(500);
     }
   }
 
@@ -74,10 +92,17 @@ class NotesHandler {
         message: 'Catatan berhasil diperbarui',
       };
     } catch (error) {
+      if (error instanceof ClientError) {
+        return h.response({
+          status: 'fail',
+          message: error.message,
+        }).code(error.statusCode);
+      }
+      console.error(error);
       return h.response({
-        status: 'fail',
-        message: error.message,
-      }).code(404);
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      }).code(500);
     }
   }
 
@@ -91,10 +116,17 @@ class NotesHandler {
         message: 'Catatan berhasil dihapus',
       };
     } catch (error) {
+      if (error instanceof ClientError) {
+        return h.response({
+          status: 'fail',
+          message: error.message,
+        }).code(error.statusCode);
+      }
+
       return h.response({
-        status: 'fail',
-        message: error.message,
-      }).code(404);
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      }).code(500);
     }
   }
 }
