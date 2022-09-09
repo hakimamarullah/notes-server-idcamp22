@@ -1,6 +1,12 @@
 class NotesHandler {
   constructor(service) {
     this._service = service;
+
+    this.postNoteHandler = this.postNoteHandler.bind(this);
+    this.getNotesHandler = this.getNotesHandler.bind(this);
+    this.getNoteByIdHandler = this.getNoteByIdHandler.bind(this);
+    this.putNoteByIdHandler = this.putNoteByIdHandler.bind(this);
+    this.deleteNoteByIdHandler = this.deleteNoteByIdHandler.bind(this);
   }
 
   postNoteHandler(request, h) {
@@ -11,7 +17,7 @@ class NotesHandler {
 
       const response = h.response({
         status: 'success',
-        message: 'Catatan berhasild ditambahkan',
+        message: 'Catatan berhasil ditambahkan',
         data: {
           noteId,
         },
@@ -55,16 +61,38 @@ class NotesHandler {
     };
   }
 
-  //   putNoteByIdHandler(request, h) {
-  //     try{
-  //       const { id } = request.params;
-  //     } catch(error) {
+  putNoteByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+      this._service.editNoteById(id, request.payload);
 
-  //     }
-  //   }
+      return {
+        status: 'success',
+        message: 'Catatan berhasil diperbarui',
+      };
+    } catch (error) {
+      return h.response({
+        status: 'fail',
+        message: error.message,
+      }).code(404);
+    }
+  }
 
-  deleteNoteByIdHandler() {
+  deleteNoteByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+      this._service.deleteNoteById(id);
 
+      return {
+        status: 'success',
+        message: 'Catatan berhasil dihapus',
+      };
+    } catch (error) {
+      return h.response({
+        status: 'fail',
+        message: error.message,
+      }).code(404);
+    }
   }
 }
 

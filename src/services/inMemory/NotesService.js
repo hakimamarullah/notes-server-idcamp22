@@ -29,7 +29,7 @@ class NotesService {
     return this._notes;
   }
 
-  getNodeById(id) {
+  getNoteById(id) {
     const note = this._notes.find((n) => n.id === id);
 
     if (!note) {
