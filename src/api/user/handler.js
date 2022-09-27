@@ -13,9 +13,9 @@ class UserHandler {
   async postUserHandler(request, h) {
     try {
       this._validator.validateUserPayload(request.payload);
-      const { username, password, fullName } = request.payload;
+      const { username, password, fullname } = request.payload;
 
-      const result = await this._service.addUser({ username, password, fullName });
+      const result = await this._service.addUser({ username, password, fullname });
 
       return h.response({
         status: 'success',
@@ -33,7 +33,7 @@ class UserHandler {
       }
       return h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
+        message: error.message,
       }).code(500);
     }
   }
