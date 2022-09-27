@@ -5,7 +5,6 @@ const NotesService = require('./services/postgres/NotesService');
 const UsersService = require('./services/postgres/UsersService');
 const NotesValidator = require('./validator/notes');
 const UserValidator = require('./validator/user');
-const UsersService = require('./services/postgres/UsersService');
 const ClientError = require('./exceptions/ClientError');
 const authentications = require('./api/authentications');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
