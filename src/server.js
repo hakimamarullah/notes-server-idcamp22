@@ -5,6 +5,11 @@ const NotesService = require('./services/postgres/NotesService');
 const NotesValidator = require('./validator/notes');
 const UserValidator = require('./validator/user');
 const UsersService = require('./services/postgres/UsersService');
+const ClientError = require('./exceptions/ClientError');
+const authentications = require('./api/authentications');
+const AuthenticationsService = require('./services/postgres/AuthenticationsService');
+const TokenManager = require('./tokenize/TokenManager');
+const AuthenticationsValidator = require('./validator/authentications');
 
 require('dotenv').config();
 
@@ -37,9 +42,36 @@ const init = async () => {
         validator: UserValidator,
       },
     },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService: new AuthenticationsService(),
+        usersService: new UsersService(),
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
+      },
+    },
   ]);
 
   await server.start();
+
+  server.ext('onPreResponse', (request, h) => {
+    // mendapatkan konteks response dari request
+    const { response } = request;
+
+    if (response instanceof ClientError) {
+      // membuat response baru dari response toolkit sesuai kebutuhan error handling
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+
+    // jika bukan ClientError, lanjutkan dengan response sebelumnya (tanpa terintervensi)
+    return response.continue || response;
+  });
 
   console.log(`Server is running on ${server.info.uri}...`);
 };

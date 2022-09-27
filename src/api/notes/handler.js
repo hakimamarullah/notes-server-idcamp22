@@ -36,7 +36,6 @@ class NotesHandler {
         }).code(error.statusCode);
       }
 
-      console.error(error);
       return h.response({
         status: 'error',
         message: 'Maaf, terjadi kegagalan pada server kami.',
@@ -63,7 +62,6 @@ class NotesHandler {
           message: error.message,
         }).code(error.statusCode);
       }
-      console.error(error);
       return h.response({
         status: 'error',
         message: 'Maaf, terjadi kegagalan pada server kami.',
@@ -98,7 +96,6 @@ class NotesHandler {
           message: error.message,
         }).code(error.statusCode);
       }
-      console.error(error);
       return h.response({
         status: 'error',
         message: 'Maaf, terjadi kegagalan pada server kami.',
