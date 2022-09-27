@@ -2,6 +2,7 @@ const Hapi = require('@hapi/hapi');
 const notes = require('./api/notes');
 const users = require('./api/user');
 const NotesService = require('./services/postgres/NotesService');
+const UsersService = require('./services/postgres/UsersService');
 const NotesValidator = require('./validator/notes');
 const UserValidator = require('./validator/user');
 const UsersService = require('./services/postgres/UsersService');
