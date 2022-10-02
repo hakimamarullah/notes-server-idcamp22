@@ -17,11 +17,7 @@ exports.up = (pgm) => {
       type: 'text',
       notNull: true,
     },
-<<<<<<< HEAD
     fullname: {
-=======
-    fullName: {
->>>>>>> 5e2e413b5de2072badc950ebe8638c85955c7180
       type: 'varchar(50)',
       notNull: true,
     },

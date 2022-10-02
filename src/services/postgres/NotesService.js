@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const AuthorizationError = require('../../exceptions/AuthorizationError');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapDBToModel } = require('../../utils/mapDBToModel');
@@ -10,14 +11,16 @@ class NotesService {
     this._pool = new Pool();
   }
 
-  async addNote({ title, body, tags }) {
+  async addNote({
+    title, body, tags, owner,
+  }) {
     const id = nanoid(16);
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO notes(id, title, body, tags, created_at, updated_at) VALUES($1,$2,$3,$4,$5, $6) RETURNING id',
-      values: [id, title, body, tags, createdAt, updatedAt],
+      text: 'INSERT INTO notes(id, title, body, tags, created_at, updated_at, owner) VALUES($1,$2,$3,$4,$5, $6, $7) RETURNING id',
+      values: [id, title, body, tags, createdAt, updatedAt, owner],
     };
 
     const result = await this._pool.query(query);
@@ -29,8 +32,13 @@ class NotesService {
     return result.rows[0].id;
   }
 
-  async getNotes() {
-    const result = await this._pool.query('SELECT * FROM notes');
+  async getNotes(owner) {
+    const query = {
+      text: 'SELECT * FROM notes where owner = $1',
+      values: [owner],
+    };
+
+    const result = await this._pool.query(query);
     return result.rows.map(mapDBToModel);
   }
 
@@ -73,6 +81,21 @@ class NotesService {
 
     if (!result.rows.length) {
       throw new NotFoundError('Catatan gagal dihapus. Id tidak ditemukan');
+    }
+  }
+
+  async verifyNoteOwner(id, owner) {
+    const query = {
+      text: 'SELECT * FROM notes WHERE id = $1',
+      values: [id],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Catatan tidak ditemukan');
+    }
+    const note = result.rows[0];
+    if (note.owner !== owner) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
   }
 }
