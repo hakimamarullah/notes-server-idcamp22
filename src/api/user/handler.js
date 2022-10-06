@@ -31,6 +31,7 @@ class UserHandler {
           message: error.message,
         }).code(error.statusCode);
       }
+
       return h.response({
         status: 'error',
         message: error.message,
