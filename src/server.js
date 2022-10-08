@@ -1,6 +1,5 @@
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
-const path = require('path');
 const Inert = require('@hapi/inert');
 
 // Notes
@@ -36,7 +35,7 @@ require('dotenv').config();
 
 // Uploads
 const uploads = require('./api/uploads');
-const StorageService = require('./services/storage/StorageService');
+const StorageService = require('./services/S3/StorageService');
 const UploadsValidator = require('./validator/uploads');
 
 const init = async () => {
@@ -44,7 +43,7 @@ const init = async () => {
   const notesService = new NotesService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const storageService = new StorageService();
 
   const config = {
     port: process.env.PORT,
@@ -130,9 +129,6 @@ const init = async () => {
       },
     },
   ]);
-
-  await server.start();
-
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
     const { response } = request;
@@ -151,6 +147,9 @@ const init = async () => {
     return response.continue || response;
   });
 
+  await server.start();
+
+  
   console.log(`Server is running on ${server.info.uri}...`);
 };
 

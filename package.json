@@ -22,6 +22,7 @@
     "@hapi/inert": "^7.0.0",
     "@hapi/jwt": "^3.0.0",
     "amqplib": "^0.10.3",
+    "aws-sdk": "^2.1231.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.2",
     "fs": "^0.0.1-security",
