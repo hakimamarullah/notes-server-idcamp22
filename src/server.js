@@ -1,12 +1,21 @@
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+
+// Notes
 const notes = require('./api/notes');
-const users = require('./api/user');
 const NotesService = require('./services/postgres/NotesService');
-const UsersService = require('./services/postgres/UsersService');
 const NotesValidator = require('./validator/notes');
+
+// User
+const users = require('./api/user');
+const UsersService = require('./services/postgres/UsersService');
 const UserValidator = require('./validator/user');
+
+// Error
 const ClientError = require('./exceptions/ClientError');
+
+// Authentication
 const authentications = require('./api/authentications');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
 const TokenManager = require('./tokenize/TokenManager');
@@ -24,11 +33,17 @@ const CollaborationsService = require('./services/postgres/CollaborationsService
 const CollaborationsValidator = require('./validator/collaborations');
 require('dotenv').config();
 
+// Uploads
+const uploads = require('./api/uploads');
+const StorageService = require('./services/S3/StorageService');
+const UploadsValidator = require('./validator/uploads');
+
 const init = async () => {
   const collaborationsService = new CollaborationsService();
   const notesService = new NotesService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const storageService = new StorageService();
 
   const config = {
     port: process.env.PORT,
@@ -44,6 +59,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -103,10 +121,14 @@ const init = async () => {
         validator: ExportsValidator,
       },
     },
+    {
+      plugin: uploads,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
+      },
+    },
   ]);
-
-  await server.start();
-
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
     const { response } = request;
@@ -124,6 +146,8 @@ const init = async () => {
     // jika bukan ClientError, lanjutkan dengan response sebelumnya (tanpa terintervensi)
     return response.continue || response;
   });
+
+  await server.start();
 
   console.log(`Server is running on ${server.info.uri}...`);
 };
