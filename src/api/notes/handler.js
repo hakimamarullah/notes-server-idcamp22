@@ -93,11 +93,12 @@ class NotesHandler {
       const { id } = request.params;
 
       await this._service.verifyNoteAccess(id, credentialId);
-      await this._service.editNoteById(id, request.payload);
+      const note = await this._service.editNoteById(id, request.payload);
 
       return {
         status: 'success',
         message: 'Catatan berhasil diperbarui',
+        data: note,
       };
     } catch (error) {
       if (error instanceof ClientError) {
