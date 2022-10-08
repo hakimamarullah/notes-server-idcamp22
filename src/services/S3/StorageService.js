@@ -17,7 +17,6 @@ class StorageService {
     return new Promise((resolve, reject) => {
       this._S3.upload(parameter, (error, data) => {
         if (error) {
-            console.log(error)
           return reject(error);
         }
 
